@@ -1,8 +1,9 @@
-import time
 import logging
 from pathlib import Path
+from threading import Event
 from watchdog.observers import Observer
-from watchdog.events import FileSystemEventHandler
+
+from src.handler import ExampleDirectoryHandler
 
 # Configure logging
 logging.basicConfig(
@@ -11,39 +12,6 @@ logging.basicConfig(
     datefmt='%Y-%m-%d %H:%M:%S'
 )
 logger = logging.getLogger(__name__)
-
-
-class ExampleDirectoryHandler(FileSystemEventHandler):
-    """Handles file system events in the example directory."""
-
-    def on_created(self, event):
-        if not event.is_directory:
-            logger.info(f"File created: {event.src_path}")
-        else:
-            logger.info(f"Directory created: {event.src_path}")
-
-    def on_deleted(self, event):
-        if not event.is_directory:
-            logger.info(f"File deleted: {event.src_path}")
-        else:
-            logger.info(f"Directory deleted: {event.src_path}")
-
-    def on_modified(self, event):
-        if not event.is_directory:
-            logger.info(f"File modified: {event.src_path}")
-
-    def on_moved(self, event):
-        src_path = Path(event.src_path)
-        dest_path = Path(event.dest_path)
-        
-        # Check if it's a rename (same parent directory) or a move
-        if src_path.parent == dest_path.parent:
-            if src_path.name != dest_path.name:
-                item_type = "Directory" if event.is_directory else "File"
-                logger.info(f"{item_type} renamed: {src_path.name} -> {dest_path.name}")
-        else:
-            item_type = "Directory" if event.is_directory else "File"
-            logger.info(f"{item_type} moved: {event.src_path} -> {event.dest_path}")
 
 
 def main():
@@ -64,10 +32,12 @@ def main():
     observer.start()
     logger.info("Watcher started. Press Ctrl+C to stop.")
 
+    stop_event = Event()
     try:
-        while True:
-            time.sleep(1)
+        stop_event.wait()  # Block efficiently until interrupted
     except KeyboardInterrupt:
+        pass
+    finally:
         observer.stop()
         logger.info("Watcher stopped.")
     
