@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "my-python-project"
+version = "0.1.0"
+description = "A standard Python project"
+readme = "README.md"
+license = "MIT"
+authors = ["Your Name <your.email@example.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+watchdog = "^6.0.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.0"
+black = "^23.0"
+ruff = "^0.1.0"
+mypy = "^1.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
