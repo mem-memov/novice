@@ -1,1 +1,1 @@
-(empty)
+Nothing should be ignored based on the provided file changes. The only added file is a Python source file (`src/handler.py`) which should not be ignored.
