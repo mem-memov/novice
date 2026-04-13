@@ -33,10 +33,17 @@ class ExampleDirectoryHandler(FileSystemEventHandler):
             logger.info(f"File modified: {event.src_path}")
 
     def on_moved(self, event):
-        if not event.is_directory:
-            logger.info(f"File moved: {event.src_path} -> {event.dest_path}")
+        src_path = Path(event.src_path)
+        dest_path = Path(event.dest_path)
+        
+        # Check if it's a rename (same parent directory) or a move
+        if src_path.parent == dest_path.parent:
+            if src_path.name != dest_path.name:
+                item_type = "Directory" if event.is_directory else "File"
+                logger.info(f"{item_type} renamed: {src_path.name} -> {dest_path.name}")
         else:
-            logger.info(f"Directory moved: {event.src_path} -> {event.dest_path}")
+            item_type = "Directory" if event.is_directory else "File"
+            logger.info(f"{item_type} moved: {event.src_path} -> {event.dest_path}")
 
 
 def main():
